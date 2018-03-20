@@ -32,14 +32,20 @@ contract ('Crowdsale_base_test', function(accounts) {
             let tokensSold = await crowdsale.getQuantitySoldEveryDay();
             assert.equal(tokensSold.toNumber(), 1000000 * 10**12);
         });
+ 
 
-        const getCountPassedDays = async(passed) => {
-            let dayDeploy = await crowdsale.timeDeploy();
-            return (dayDeploy + passed * oneDay) / oneDay;
-        }
+        const checkCounting = async(day, result, startOrEnd) => { 
+            let dayDeploy = (await crowdsale.timeDeploy()).toNumber();
 
-        const checkCounting = (daysPass, result) => { 
-            let daysPass = getCountPassedDays(currentDay, daysPass);
+            let dayAuction;
+            if(startOrEnd === "start") {
+                dayAuction = (await crowdsale.timeStartDay(day)).toNumber();  
+            } else {
+                dayAuction = (await crowdsale.timeEndsDay(day)).toNumber(); 
+            }
+            
+
+            let daysPass = (dayAuction - dayDeploy) / oneDay; 
             assert.equal(daysPass, result);
         }
  
@@ -58,11 +64,12 @@ contract ('Crowdsale_base_test', function(accounts) {
             assert.equal(daysBeforeLastAuctionDayStart, 1439);
         });   
 
-        it('Should correctly count 1 auction day starts', async () => checkCounting(1, 80));  
-        it('Should correctly count 10 auction day starts', async () => checkCounting(10, 89)); 
-        it('Should correctly count 21 auction day starts', async () => checkCounting(21, 180)); 
-        it('Should correctly count 152 auction day starts', async () => checkCounting(152, 1431)); 
-        it('Should correctly count 160 auction day starts', async () => checkCounting(160, 1439));
+        it('Should correctly count 1 auction day starts', async () => checkCounting(1, 80, "start"));  
+        it('Should correctly count 10 auction day starts', async () => checkCounting(10, 89, "start")); 
+        it('Should correctly count 21 auction day starts', async () => checkCounting(21, 260, "start")); 
+        it('Should correctly count 39 auction day starts', async () => checkCounting(39, 358, "start"));  
+        it('Should correctly count 152 auction day starts', async () => checkCounting(152, 1431, "start")); 
+        it('Should correctly count 160 auction day starts', async () => checkCounting(160, 1439, "start"));
 
         it('Should throw error if try init START auction days again', async () => {
             try {
@@ -82,11 +89,18 @@ contract ('Crowdsale_base_test', function(accounts) {
             let daysBeforeFirstAuctionDay = (firstDayEnds - timeDeploy) / oneDay;
 
             let lastDayEnds = await crowdsale.timeEndsDay(auctionDays);
-            let daysBeforeLastAuctionDayEnds = (lastDayEnds - timeDeploy) / oneDay;
+            let daysAfterLastAuctionDayEnds = (lastDayEnds - timeDeploy) / oneDay;
 
             assert.equal(daysBeforeFirstAuctionDay, 81);
-            assert.equal(daysBeforeLastAuctionDayEnds, 1431);
+            assert.equal(daysAfterLastAuctionDayEnds, 1440);
         });  
+
+        it('Should correctly count 1 auction day ends', async () => checkCounting(1, 81, "end"));  
+        it('Should correctly count 10 auction day ends', async () => checkCounting(10, 90, "end")); 
+        it('Should correctly count 21 auction day ends', async () => checkCounting(21, 261, "end")); 
+        it('Should correctly count 39 auction day starts', async () => checkCounting(39, 359, "end"));   
+        it('Should correctly count 152 auction day ends', async () => checkCounting(152, 1432, "end")); 
+        it('Should correctly count 160 auction day ends', async () => checkCounting(160, 1440, "end"));
 
         it('Should throw error if try init ENDS auction days again', async () => {
             try {

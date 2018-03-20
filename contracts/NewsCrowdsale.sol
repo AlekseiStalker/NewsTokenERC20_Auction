@@ -121,7 +121,7 @@ contract NewsCrowdsale {
             return;
         }
         
-        require(indexCurDay > day);
+        require(now > timeEndsDay[day]);
         
         uint price        = amountSellPerDay / dailyTotals[day];
         uint userPersent  = price * userContribution[day][msg.sender];
