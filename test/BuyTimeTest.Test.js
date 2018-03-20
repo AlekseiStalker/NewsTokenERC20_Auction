@@ -8,7 +8,7 @@ contract ('Crowdsale_test2', function(accounts) {
     let crowdsaleTest;
     let ether = 1000000000000000000;
     describe('Buy time ', function() { 
-        /*
+        
         it('Try to buy on break', async() => {
             crowdsaleTest = await CrowdsaleTest.new(); 
             token = await NewsToken.new(crowdsaleTest.address); 
@@ -299,7 +299,7 @@ contract ('Crowdsale_test2', function(accounts) {
             await crowdsaleTest.testClaim(1);
         });
 
-        */
+        
         it('Claim at the time that not allowed ', async()=>{
             crowdsaleTest = await CrowdsaleTest.new(); 
             token = await NewsToken.new(crowdsaleTest.address); 
