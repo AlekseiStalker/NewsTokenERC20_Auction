@@ -55,7 +55,7 @@ contract NewsCrowdsale {
             indexCurDay++;
         }
         
-        require(now >= timeStartDay[indexCurDay] && now <= timeEndsDay[indexCurDay]);
+        require(today >= timeStartDay[indexCurDay] && today <= timeEndsDay[indexCurDay]);
         _;
     }  
 
@@ -162,5 +162,14 @@ contract NewsCrowdsale {
 
     function getTimeAuctionFinalize() public view returns(uint) {
         return timeFinalizeAuction;
+    }
+
+    function isAuctionActive() public view returns(bool) {
+        uint dayCounter = indexCurDay; 
+        while (now >= timeStartDay[dayCounter + 1]) {
+            dayCounter++;
+        } 
+
+        return now >= timeStartDay[dayCounter] && now <= timeEndsDay[dayCounter];
     }
 }

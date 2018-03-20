@@ -15,7 +15,7 @@ contract ('Crowdsale_base_test', function(accounts) {
         token = await NewsToken.new(crowdsale.address); 
     });
 
-    describe('daysInitTest', function() {  
+    describe('daysInit_test', function() {  
 
         it('Should be able to set token address', async ()=> { 
             await crowdsale.setTokenAddress(token.address); 
@@ -31,8 +31,7 @@ contract ('Crowdsale_base_test', function(accounts) {
         it('Should correcly set amount tokens witch sold every auction day', async ()=> {
             let tokensSold = await crowdsale.getQuantitySoldEveryDay();
             assert.equal(tokensSold.toNumber(), 1000000 * 10**12);
-        });
- 
+        }); 
 
         const checkCounting = async(day, result, startOrEnd) => { 
             let dayDeploy = (await crowdsale.timeDeploy()).toNumber();
