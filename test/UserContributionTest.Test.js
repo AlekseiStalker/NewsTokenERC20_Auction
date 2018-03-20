@@ -58,10 +58,10 @@ contract ('Crowdsale_test', function(accounts) {
             await crowdsaleTest.initStartAuctionDays();
             await crowdsaleTest.initEndsAuctionDays();
             
-            await crowdsaleTest.updateTime(81);
+            await crowdsaleTest.updateTime(80);
             await crowdsaleTest.buy({from: investor1, value: 10}); 
             try{
-                await crowdsaleTest.claim(2);
+                await crowdsaleTest.claim(1);
             } catch(error) { return true; }
             throw new Error('transaction should failed!');  
         });
