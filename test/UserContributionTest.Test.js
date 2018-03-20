@@ -3,7 +3,7 @@ const ether = require("./helpers/ether.js");
 const NewsToken = artifacts.require("./NewsToken.sol");
 const CrowdsaleTest = artifacts.require("./TESTNewsCrowdsale.sol");
 
-contract ('Crowdsale_test2', function(accounts) {
+contract ('Crowdsale_test', function(accounts) {
     var [deployer, investor1, investor2, investor3] = web3.eth.accounts;
 
     let token;
@@ -39,10 +39,10 @@ contract ('Crowdsale_test2', function(accounts) {
             await crowdsaleTest.testSetUserContribut(1, {from: investor1, value: ether(3.5)});  
             await crowdsaleTest.testSetUserContribut(1, {from: investor2, value: ether(0.038)});
  
-            await crowdsaleTest.testSetUserContribut(2, {from: investor1, value: ether(0.07)});
-            await crowdsaleTest.testSetUserContribut(2, {from: investor2, value: ether(0.5)}); 
-            await crowdsaleTest.testSetUserContribut(2, {from: investor2, value: ether(0.5)}); 
-            await crowdsaleTest.testSetUserContribut(2, {from: investor2, value: ether(0.02)}); 
+            await crowdsaleTest.testSetUserContribut(13, {from: investor1, value: ether(0.07)});
+            await crowdsaleTest.testSetUserContribut(13, {from: investor2, value: ether(0.5)}); 
+            await crowdsaleTest.testSetUserContribut(13, {from: investor2, value: ether(0.5)}); 
+            await crowdsaleTest.testSetUserContribut(13, {from: investor2, value: ether(0.02)}); 
              
             await crowdsaleTest.testClaimAll({from: investor1});
             await crowdsaleTest.testClaimAll({from: investor2});
@@ -53,9 +53,18 @@ contract ('Crowdsale_test2', function(accounts) {
              assert.equal(1053479652112581098, investor1Balance.toNumber());
              assert.equal(946520347887418900, investor2Balance.toNumber());
         });
-
-
-        //TestinitDays протестировать с секундами
+        
+        it('Should throw error if try claim day that has not come', async ()=> {
+            await crowdsaleTest.initStartAuctionDays();
+            await crowdsaleTest.initEndsAuctionDays();
+            
+            await crowdsaleTest.updateTime(81);
+            await crowdsaleTest.buy({from: investor1, value: 10}); 
+            try{
+                await crowdsaleTest.claim(2);
+            } catch(error) { return true; }
+            throw new Error('transaction should failed!');  
+        });
     });
 });
 
