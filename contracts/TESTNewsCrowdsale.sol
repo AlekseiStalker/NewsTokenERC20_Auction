@@ -44,7 +44,7 @@ contract TESTNewsCrowdsale {
             indexCurDay++;
         }
         
-        require(now >= timeStartDay[indexCurDay] && now <= timeEndsDay[indexCurDay]);
+        require(NowTime >= timeStartDay[indexCurDay] && NowTime <= timeEndsDay[indexCurDay]);
         _;
     } 
     
@@ -129,7 +129,7 @@ contract TESTNewsCrowdsale {
        buy();
     }  
     
-    function buy() payable public whenNotPause(now) {   
+    function buy() payable public whenNotPause(NowTime) {   
  
         userContribution[indexCurDay][msg.sender] += msg.value;
         dailyTotals[indexCurDay] += msg.value; 
