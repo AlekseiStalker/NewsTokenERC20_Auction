@@ -145,7 +145,7 @@ contract NewsCrowdsale {
     function getCurrentDay() public view returns(uint) {
         uint dayCounter = indexCurDay;
         
-        while (now >= timeStartDay[dayCounter + 1]) {
+        while (now >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
             dayCounter++;
         } 
         return now >= timeStartAuction && now <= timeFinalizeAuction
@@ -167,7 +167,7 @@ contract NewsCrowdsale {
 
     function isAuctionActive() public view returns(bool) {
         uint dayCounter = indexCurDay; 
-        while (now >= timeStartDay[dayCounter + 1]) {
+        while (now >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
             dayCounter++;
         } 
 
@@ -177,4 +177,20 @@ contract NewsCrowdsale {
 	function getTimeNow() public view returns(uint) {
 		return now;
 	} 
+
+    function getDaysToNextAuction() public view returns(uint) {
+        uint dayCounter = indexCurDay; 
+        while (now >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
+            dayCounter++;
+        }
+
+        if (now >= timeStartAuction && dayCounter < numOf_SalesDays) {
+            return dayCounter % 10 == 0 && now >= timeEndsDay[dayCounter]
+                   ? (timeStartDay[dayCounter + 1] - now) / 1 days
+                   : 0;
+        } else {
+            return (timeStartAuction - now) / 1 days;
+        }
+    } 
 }
+//burn? & 2 wallets & claimAll/2
