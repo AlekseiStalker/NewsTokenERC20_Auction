@@ -10,7 +10,7 @@ contract IToken {
 
 contract NewsCrowdsale {
     
-    address public token;
+    NewsToken public token;
  
     uint public timeDeploy; 
 
@@ -38,6 +38,9 @@ contract NewsCrowdsale {
     event Claim (uint day, address user, uint amount); 
 
     function NewsCrowdsale() public {  
+        token = new NewsToken(this);
+        amountSellPerDay = token.balanceOf(this) / numOf_SalesDays * decimalVar;
+
         numOf_SalesDays = 160; 
         numOf_BreakDays = 80;
         numOf_AuctionDays = 10;
@@ -59,12 +62,6 @@ contract NewsCrowdsale {
         _;
     }  
 
-    function setTokenAddress(address tokenAddress) public {
-        require(token == address(0));
-        token = tokenAddress;
-
-        amountSellPerDay = IToken(token).balanceOf(this) / numOf_SalesDays * decimalVar;
-    }
 
     function initStartAuctionDays() public {
         require(timeStartAuction == 0);

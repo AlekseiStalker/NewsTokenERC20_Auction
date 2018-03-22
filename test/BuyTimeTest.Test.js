@@ -55,11 +55,6 @@ contract ('Crowdsale_test', function(accounts) {
             throw new Error('transaction should failed!'); 
         }); 
 
-        it('Try to buy on auction', async() => { 
-            await crowdsaleTest.updateTime(81);
-            await crowdsaleTest.buy({from: accounts[0], value: 10});
-        }); 
-
         it('Try to buy on 1 auction', async() => {  
             for(var i = 80; i < 90 ; i++) {
                 await crowdsaleTest.updateTime(i);    
@@ -83,6 +78,84 @@ contract ('Crowdsale_test', function(accounts) {
 
         it('Try to buy on 4 auction', async() => {  
             for(var i = 350; i < 360 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        it('Try to buy on 5 auction', async() => {  
+            for(var i = 440; i < 450 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        it('Try to buy on 6 auction', async() => {  
+            for(var i = 530; i < 540 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        it('Try to buy on 7 auction', async() => {  
+            for(var i = 620; i < 630 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        it('Try to buy on 8 auction', async() => {  
+            for(var i = 710; i < 720 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        it('Try to buy on 9 auction', async() => {  
+            for(var i = 800; i < 810 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        it('Try to buy on 10 auction', async() => {  
+            for(var i = 890; i < 900 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        it('Try to buy on 11 auction', async() => {  
+            for(var i = 980; i < 990 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        it('Try to buy on 12 auction', async() => {  
+            for(var i = 1070; i < 1080 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        it('Try to buy on 13 auction', async() => {  
+            for(var i = 1160; i < 1170 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        it('Try to buy on 14 auction', async() => {  
+            for(var i = 1250; i < 1260 ; i++) {
+                await crowdsaleTest.updateTime(i);  
+                await crowdsaleTest.buy({from: accounts[0], value: 10});
+            }
+        });
+
+        
+        it('Try to buy on 15 auction', async() => {  
+            for(var i = 1340; i < 1350 ; i++) {
                 await crowdsaleTest.updateTime(i);  
                 await crowdsaleTest.buy({from: accounts[0], value: 10});
             }
