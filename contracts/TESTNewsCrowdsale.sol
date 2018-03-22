@@ -156,13 +156,14 @@ contract TESTNewsCrowdsale {
         return amountSellPerDay / decimalVar;
     } 
     
-     function getCurrentDay() public view returns(uint) {
+    //this
+    function getCurrentDay() public view returns(uint) {
         uint dayCounter = indexCurDay;
         
-        while (now >= timeStartDay[dayCounter + 1]) {
+        while (NowTime >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
             dayCounter++;
         } 
-        return now >= timeStartAuction && now <= timeFinalizeAuction
+        return NowTime >= timeStartAuction && NowTime <= timeFinalizeAuction
                 ? dayCounter 
                 : 0;
     }
@@ -179,14 +180,35 @@ contract TESTNewsCrowdsale {
         return timeFinalizeAuction;
     }
 
+    //this
     function isAuctionActive() public view returns(bool) {
         uint dayCounter = indexCurDay; 
-        while (now >= timeStartDay[dayCounter + 1]) {
+        while (NowTime >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
             dayCounter++;
         } 
 
-        return now >= timeStartDay[dayCounter] && now <= timeEndsDay[dayCounter];
+        return NowTime >= timeStartDay[dayCounter] && NowTime <= timeEndsDay[dayCounter];
     }
+	
+	function getTimeNow() public view returns(uint) {
+		return NowTime;
+	} 
+
+    //this
+    function getDaysToNextAuction() public view returns(uint) {
+        uint dayCounter = indexCurDay; 
+        while (NowTime >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
+            dayCounter++;
+        }
+
+        if (NowTime >= timeStartAuction && dayCounter < numOf_SalesDays) {
+            return dayCounter % 10 == 0 && now >= timeEndsDay[dayCounter]
+                   ? (timeStartDay[dayCounter + 1] - NowTime) / 1 days
+                   : 0;
+        } else {
+            return (timeStartAuction - NowTime) / 1 days;
+        }
+    } 
     
     //---------------------------test-method-buy/claim-----------------------
     
