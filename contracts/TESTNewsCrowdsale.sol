@@ -10,7 +10,9 @@ contract IToken {
 
 contract TESTNewsCrowdsale {
 
-    NewsToken public token;
+    uint NowTime; 
+ 
+    address public token;
  
     uint public timeDeploy; 
 
@@ -51,23 +53,21 @@ contract TESTNewsCrowdsale {
         NowTime = now + _i * 1 days;
     }
 
-    
     function TESTNewsCrowdsale() public { 
-        token = new NewsToken(this);
-        
+        updateTime(0);
+        timeDeploy = NowTime; 
+
         numOf_SalesDays = 160; 
-        numOf_BreakDays = 2;
+        numOf_BreakDays = 80;
         numOf_AuctionDays = 10;
-        amountSellPerDay = token.balanceOf(this) / numOf_SalesDays * decimalVar;
-        
+
         indexCurDay = 1; 
         decimalVar = 10 ether; 
           
-        timeDeploy = now; 
-        timeStartDay[1] = timeDeploy + numOf_BreakDays * 1 minutes; 
-        timeEndsDay[1] = timeDeploy + (numOf_BreakDays + 1) * 1 minutes; 
-    } 
-
+        
+        timeStartDay[1] = timeDeploy + numOf_BreakDays * 1 days; 
+        timeEndsDay[1] = timeDeploy + (numOf_BreakDays + 1) * 1 days; 
+    }  
 
     //TEST
 
@@ -129,24 +129,25 @@ contract TESTNewsCrowdsale {
         Buy(indexCurDay, msg.sender, msg.value);
     }  
 
-      function claim(uint day) public { 
+    function claim(uint day) public { 
         if (claimed[day][msg.sender] || dailyTotals[day] == 0) {
             return;
         }
         
-        require(NowTime > timeEndsDay[day]);
+        require(now > timeEndsDay[day]);
         
         uint price        = amountSellPerDay / dailyTotals[day];
         uint userPersent  = price * userContribution[day][msg.sender];
         uint reward       = userPersent / decimalVar; 
 
         claimed[day][msg.sender] = true;
-        token.transfer(msg.sender, reward);
+        IToken(token).transfer(msg.sender, reward);
 
         Claim(day, msg.sender, reward);
     } 
+
     function claimAll() external { 
-        for (uint i = 1; i <= indexCurDay; i++) {
+        for (uint i = 1; i < indexCurDay + 1; i++) {
             claim(i);
         } 
     }   
@@ -155,13 +156,15 @@ contract TESTNewsCrowdsale {
         return amountSellPerDay / decimalVar;
     } 
     
-    function getCurrentDay() public view returns(uint) {
+     function getCurrentDay() public view returns(uint) {
         uint dayCounter = indexCurDay;
         
         while (now >= timeStartDay[dayCounter + 1]) {
             dayCounter++;
         } 
-        return dayCounter;
+        return now >= timeStartAuction && now <= timeFinalizeAuction
+                ? dayCounter 
+                : 0;
     }
 
     function getNumberOfSalesDays() public view returns(uint) {
@@ -216,10 +219,10 @@ contract TESTNewsCrowdsale {
         } 
     }   
 
-    function getNowTime() public returns(uint) {
+    function getNowTime() public view returns(uint) {
         return NowTime;
     }
-    function time() public returns(uint) {
+    function time() public view returns(uint) {
         return now;
     }
 }
