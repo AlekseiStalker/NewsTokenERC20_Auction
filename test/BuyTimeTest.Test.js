@@ -7,8 +7,7 @@ contract ('Crowdsale_test', function(accounts) {
 
     before(async function() {
         crowdsaleTest = await CrowdsaleTest.new(); 
-        token = await NewsToken.new(crowdsaleTest.address); 
-        await crowdsaleTest.setTokenAddress(token.address);
+       
         await crowdsaleTest.initStartAuctionDays();
         await crowdsaleTest.initEndsAuctionDays();
     });

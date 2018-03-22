@@ -10,9 +10,7 @@ contract IToken {
 
 contract TESTNewsCrowdsale {
 
-    uint NowTime; 
- 
-    address public token;
+    NewsToken public token;
  
     uint public timeDeploy; 
 
@@ -53,21 +51,23 @@ contract TESTNewsCrowdsale {
         NowTime = now + _i * 1 days;
     }
 
+    
     function TESTNewsCrowdsale() public { 
-        updateTime(0);
-        timeDeploy = NowTime; 
-
-        numOf_SalesDays = 160; 
-        numOf_BreakDays = 80;
-        numOf_AuctionDays = 10;
-
-        indexCurDay = 1; 
-        decimalVar = 1 ether; 
-          
+        token = new NewsToken(this);
         
-        timeStartDay[1] = timeDeploy + numOf_BreakDays * 1 days; 
-        timeEndsDay[1] = timeDeploy + (numOf_BreakDays + 1) * 1 days; 
-    }  
+        numOf_SalesDays = 160; 
+        numOf_BreakDays = 2;
+        numOf_AuctionDays = 10;
+        amountSellPerDay = token.balanceOf(this) / numOf_SalesDays * decimalVar;
+        
+        indexCurDay = 1; 
+        decimalVar = 10 ether; 
+          
+        timeDeploy = now; 
+        timeStartDay[1] = timeDeploy + numOf_BreakDays * 1 minutes; 
+        timeEndsDay[1] = timeDeploy + (numOf_BreakDays + 1) * 1 minutes; 
+    } 
+
 
     //TEST
 
@@ -129,23 +129,22 @@ contract TESTNewsCrowdsale {
         Buy(indexCurDay, msg.sender, msg.value);
     }  
 
-    function claim(uint day) public { 
+      function claim(uint day) public { 
         if (claimed[day][msg.sender] || dailyTotals[day] == 0) {
             return;
         }
         
-        require(now > timeEndsDay[day]);
+        require(NowTime > timeEndsDay[day]);
         
         uint price        = amountSellPerDay / dailyTotals[day];
         uint userPersent  = price * userContribution[day][msg.sender];
         uint reward       = userPersent / decimalVar; 
 
         claimed[day][msg.sender] = true;
-        IToken(token).transfer(msg.sender, reward);
+        token.transfer(msg.sender, reward);
 
         Claim(day, msg.sender, reward);
     } 
-
     function claimAll() external { 
         for (uint i = 1; i <= indexCurDay; i++) {
             claim(i);
