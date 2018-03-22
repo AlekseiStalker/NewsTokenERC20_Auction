@@ -2,15 +2,14 @@ pragma solidity ^0.4.18;
 
 import "./NewsToken.sol";
  
- 
-contract IToken {
+ contract IToken {
     function balanceOf(address who) public view returns (uint256);
     function transfer(address to, uint256 value) public returns (bool);
 }
 
 contract NewsCrowdsale {
     
-    NewsToken public token;
+    address public token;
  
     uint public timeDeploy; 
 
@@ -38,9 +37,6 @@ contract NewsCrowdsale {
     event Claim (uint day, address user, uint amount); 
 
     function NewsCrowdsale() public {  
-        token = new NewsToken(this);
-        amountSellPerDay = token.balanceOf(this) / numOf_SalesDays * decimalVar;
-
         numOf_SalesDays = 160; 
         numOf_BreakDays = 80;
         numOf_AuctionDays = 10;
@@ -62,6 +58,12 @@ contract NewsCrowdsale {
         _;
     }  
 
+    function setTokenAddress(address tokenAddress) public {
+        require(token == address(0));
+        token = tokenAddress;
+
+        amountSellPerDay = IToken(token).balanceOf(this) / numOf_SalesDays * decimalVar;
+    }
 
     function initStartAuctionDays() public {
         require(timeStartAuction == 0);
