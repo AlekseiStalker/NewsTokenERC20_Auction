@@ -62,7 +62,7 @@ contract TESTNewsCrowdsale {
         numOf_AuctionDays = 10;
 
         indexCurDay = 1; 
-        decimalVar = 1 ether; 
+        decimalVar = 10 ether; 
           
         
         timeStartDay[1] = timeDeploy + numOf_BreakDays * 1 days; 
@@ -147,7 +147,7 @@ contract TESTNewsCrowdsale {
     } 
 
     function claimAll() external { 
-        for (uint i = 1; i <= indexCurDay; i++) {
+        for (uint i = 1; i < indexCurDay + 1; i++) {
             claim(i);
         } 
     }   
@@ -156,13 +156,15 @@ contract TESTNewsCrowdsale {
         return amountSellPerDay / decimalVar;
     } 
     
-    function getCurrentDay() public view returns(uint) {
+     function getCurrentDay() public view returns(uint) {
         uint dayCounter = indexCurDay;
         
         while (now >= timeStartDay[dayCounter + 1]) {
             dayCounter++;
         } 
-        return dayCounter;
+        return now >= timeStartAuction && now <= timeFinalizeAuction
+                ? dayCounter 
+                : 0;
     }
 
     function getNumberOfSalesDays() public view returns(uint) {
@@ -217,10 +219,10 @@ contract TESTNewsCrowdsale {
         } 
     }   
 
-    function getNowTime() public returns(uint) {
+    function getNowTime() public view returns(uint) {
         return NowTime;
     }
-    function time() public returns(uint) {
+    function time() public view returns(uint) {
         return now;
     }
 }

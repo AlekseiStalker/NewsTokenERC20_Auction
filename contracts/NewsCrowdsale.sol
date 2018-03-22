@@ -10,7 +10,7 @@ contract IToken {
 
 contract NewsCrowdsale {
     
-    address public token;
+    NewsToken public token;
  
     uint public timeDeploy; 
 
@@ -38,12 +38,15 @@ contract NewsCrowdsale {
     event Claim (uint day, address user, uint amount); 
 
     function NewsCrowdsale() public {  
+        token = new NewsToken(this);
+        amountSellPerDay = token.balanceOf(this) / numOf_SalesDays * decimalVar;
+
         numOf_SalesDays = 160; 
         numOf_BreakDays = 80;
         numOf_AuctionDays = 10;
 
         indexCurDay = 1; 
-        decimalVar = 1 ether; 
+        decimalVar = 10 ether; 
           
         timeDeploy = now; 
         timeStartDay[1] = timeDeploy + numOf_BreakDays * 1 days; 
@@ -59,12 +62,6 @@ contract NewsCrowdsale {
         _;
     }  
 
-    function setTokenAddress(address tokenAddress) public {
-        require(token == address(0));
-        token = tokenAddress;
-
-        amountSellPerDay = IToken(token).balanceOf(this) / numOf_SalesDays * decimalVar;
-    }
 
     function initStartAuctionDays() public {
         require(timeStartAuction == 0);
@@ -134,7 +131,7 @@ contract NewsCrowdsale {
     } 
 
     function claimAll() external { 
-        for (uint i = 1; i <= indexCurDay; i++) {
+        for (uint i = 1; i < indexCurDay + 1; i++) {
             claim(i);
         } 
     }  
@@ -149,7 +146,9 @@ contract NewsCrowdsale {
         while (now >= timeStartDay[dayCounter + 1]) {
             dayCounter++;
         } 
-        return dayCounter;
+        return now >= timeStartAuction && now <= timeFinalizeAuction
+                ? dayCounter 
+                : 0;
     }
 
     function getNumberOfSalesDays() public view returns(uint) {
@@ -172,4 +171,8 @@ contract NewsCrowdsale {
 
         return now >= timeStartDay[dayCounter] && now <= timeEndsDay[dayCounter];
     }
+	
+	function getTimeNow() public view returns(uint) {
+		return now;
+	} 
 }
