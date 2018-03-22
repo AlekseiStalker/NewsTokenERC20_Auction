@@ -70,22 +70,4 @@ contract ('Crowdsale_test', function(accounts) {
         });
     });
 });
-
-
-it('Shold be able to deploy crowdsale', async() => {
-    crowdsaleTest = await CrowdsaleTest.new(); 
-    let numberOfDays = await crowdsaleTest.numberOfDays(); 
-    assert.equal(numberOfDays, 160);
-});
-
-it('Shold be able to deploy token', async() => {
-    token = await NewsToken.new(crowdsaleTest.address); 
-    let tokenName = await token.name();
-    assert.equal(tokenName, "NewsToken");
-});
-
-it('Shold be able to set Token in Crowdsale', async() => {
-    await crowdsaleTest.setTokenAddress(token.address); 
-    let amountSellPerDay = await crowdsaleTest.amountSellPerDay();
-    assert.equal(amountSellPerDay, 1000000 * 10 ** 12 * 10**18);
-});
+ 
