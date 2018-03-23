@@ -42,7 +42,7 @@ contract NewsCrowdsale {
         numOf_AuctionDays = 10;
 
         indexCurDay = 1; 
-        decimalVar = 10 ether; 
+        decimalVar = 1 ether; 
           
         timeDeploy = now; 
         timeStartDay[1] = timeDeploy + numOf_BreakDays * 1 days; 
