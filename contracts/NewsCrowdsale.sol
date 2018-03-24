@@ -34,7 +34,7 @@ contract NewsCrowdsale {
     mapping (uint => mapping (address => uint)) public userContribution;
     mapping (uint => mapping (address => bool)) public claimed;
     
-    event Buy (uint day, address user, uint amount);
+    event Contribute (uint day, address user, uint amount);
     event Claim (uint day, address user, uint amount); 
 
     function NewsCrowdsale() public {  
@@ -113,7 +113,7 @@ contract NewsCrowdsale {
         
         ownerWallet.transfer(msg.value);
         
-        Buy(indexCurDay, msg.sender, msg.value);
+        Contribute(indexCurDay, msg.sender, msg.value);
     }  
 
     function claim(uint day) public { 
@@ -146,14 +146,18 @@ contract NewsCrowdsale {
         return amountSellPerDay / decimalVar;
     } 
     
-    function getCurrentDay() public view returns(uint) {
-        uint dayCounter = indexCurDay;
-        
+    function currentDay(uint dayCounter) private view returns(uint) {
         while (now >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
             dayCounter++;
-        } 
+        }
+        return dayCounter;
+    }
+
+    function getCurrentDay() public view returns(uint) {
+        uint numOfDay = currentDay(indexCurDay);
+         
         return now >= timeStartAuction && now <= timeFinalizeAuction
-                ? dayCounter 
+                ? numOfDay 
                 : 0;
     }
 
@@ -170,12 +174,9 @@ contract NewsCrowdsale {
     }
 
     function isAuctionActive() public view returns(bool) {
-        uint dayCounter = indexCurDay; 
-        while (now >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
-            dayCounter++;
-        } 
+        uint numOfDay = currentDay(indexCurDay);
 
-        return now >= timeStartDay[dayCounter] && now <= timeEndsDay[dayCounter];
+        return now >= timeStartDay[numOfDay] && now <= timeEndsDay[numOfDay];
     }
 	
 	function getTimeNow() public view returns(uint) {
@@ -183,18 +184,15 @@ contract NewsCrowdsale {
 	} 
 
     function getDaysToNextAuction() public view returns(uint) {
-        uint dayCounter = indexCurDay; 
-        while (now >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
-            dayCounter++;
-        }
+        uint numOfDay = currentDay(indexCurDay);
 
-        if(dayCounter == 160) {
+        if(numOfDay == 160) {
             return 0;
         }
 
         if (now >= timeStartAuction && now <= timeFinalizeAuction) {
-            return dayCounter % 10 == 0 && now >= timeEndsDay[dayCounter]
-                   ? (timeStartDay[dayCounter + 1] - now) / 1 days
+            return numOfDay % 10 == 0 && now >= timeEndsDay[numOfDay]
+                   ? (timeStartDay[numOfDay + 1] - now) / 1 days
                    : 0;
         } else {
             return (timeStartAuction - now) / 1 days;
