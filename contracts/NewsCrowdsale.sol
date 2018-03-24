@@ -5,6 +5,7 @@ import "./NewsToken.sol";
  contract IToken {
     function balanceOf(address who) public view returns (uint256);
     function transfer(address to, uint256 value) public returns (bool);
+    function burn(uint256 _value);
 }
 
 contract NewsCrowdsale {
@@ -42,7 +43,7 @@ contract NewsCrowdsale {
         numOf_AuctionDays = 10;
 
         indexCurDay = 1; 
-        decimalVar = 10 ether; 
+        decimalVar = 1 ether; 
           
         timeDeploy = now; 
         timeStartDay[1] = timeDeploy + numOf_BreakDays * 1 days; 
@@ -132,11 +133,14 @@ contract NewsCrowdsale {
         Claim(day, msg.sender, reward);
     } 
 
-    function claimAll() external { 
-        for (uint i = 1; i < indexCurDay + 1; i++) {
+    function claimInterval(uint fromDay, uint toDay) external {  
+        require(fromDay > 0 && toDay <= numOf_AuctionDays);
+        require(fromDay < toDay);
+
+        for (uint i = fromDay; i <= toDay; i++) {
             claim(i);
         } 
-    }  
+    } 
 
     function getQuantitySoldEveryDay() public view returns(uint) {
         return amountSellPerDay / decimalVar;
@@ -145,7 +149,7 @@ contract NewsCrowdsale {
     function getCurrentDay() public view returns(uint) {
         uint dayCounter = indexCurDay;
         
-        while (now >= timeStartDay[dayCounter + 1]) {
+        while (now >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
             dayCounter++;
         } 
         return now >= timeStartAuction && now <= timeFinalizeAuction
@@ -167,7 +171,7 @@ contract NewsCrowdsale {
 
     function isAuctionActive() public view returns(bool) {
         uint dayCounter = indexCurDay; 
-        while (now >= timeStartDay[dayCounter + 1]) {
+        while (now >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
             dayCounter++;
         } 
 
@@ -177,4 +181,27 @@ contract NewsCrowdsale {
 	function getTimeNow() public view returns(uint) {
 		return now;
 	} 
+
+    function getDaysToNextAuction() public view returns(uint) {
+        uint dayCounter = indexCurDay; 
+        while (now >= timeStartDay[dayCounter + 1] && dayCounter < numOf_SalesDays) {
+            dayCounter++;
+        }
+
+        if (now >= timeStartAuction && dayCounter < numOf_SalesDays) {
+            return dayCounter % 10 == 0 && now >= timeEndsDay[dayCounter]
+                   ? (timeStartDay[dayCounter + 1] - now) / 1 days
+                   : 0;
+        } else {
+            return (timeStartAuction - now) / 1 days;
+        }
+    } 
+
+    function burnAllUnsoldTokens() public {
+        require(now > timeFinalizeAuction);
+
+        uint contractBalance = IToken(token).balanceOf(this);
+        IToken(token).burn(contractBalance);
+    }
 }
+ 
