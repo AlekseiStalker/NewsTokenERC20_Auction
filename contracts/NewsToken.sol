@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
  
 import "./StandardToken.sol";
 
-contract NewsToken is StandardToken {
+contract NewsToken is BurnableToken {
 
   string public constant name = "NewsToken";  
   string public constant symbol = "NEWS"; 

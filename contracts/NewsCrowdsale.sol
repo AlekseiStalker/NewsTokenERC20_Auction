@@ -5,6 +5,7 @@ import "./NewsToken.sol";
  contract IToken {
     function balanceOf(address who) public view returns (uint256);
     function transfer(address to, uint256 value) public returns (bool);
+    function burn(uint256 _value);
 }
 
 contract NewsCrowdsale {
@@ -132,11 +133,14 @@ contract NewsCrowdsale {
         Claim(day, msg.sender, reward);
     } 
 
-    function claimAll() external { 
-        for (uint i = 1; i < indexCurDay + 1; i++) {
+    function claimInterval(uint fromDay, uint toDay) external {  
+        require(fromDay > 0 && toDay <= numOf_AuctionDays);
+        require(fromDay < toDay);
+
+        for (uint i = fromDay; i <= toDay; i++) {
             claim(i);
         } 
-    }  
+    } 
 
     function getQuantitySoldEveryDay() public view returns(uint) {
         return amountSellPerDay / decimalVar;
@@ -192,5 +196,12 @@ contract NewsCrowdsale {
             return (timeStartAuction - now) / 1 days;
         }
     } 
+
+    function burnAllUnsoldTokens() public {
+        require(now > timeFinalizeAuction);
+
+        uint contractBalance = IToken(token).balanceOf(this);
+        IToken(token).burn(contractBalance);
+    }
 }
-//burn? & 2 wallets & claimAll/2
+ 
