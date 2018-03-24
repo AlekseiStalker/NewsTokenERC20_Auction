@@ -51,13 +51,12 @@ contract TESTNewsCrowdsale {
 
     // TEST
     function updateTime(uint _i) public {
-        NowTime = now + _i * 1 days;
+        NowTime = timeDeploy + _i * 1 days;
     }
 
     function TESTNewsCrowdsale() public { 
+        timeDeploy = now; 
         updateTime(0);
-        timeDeploy = NowTime; 
-
         numOf_SalesDays = 160; 
         numOf_BreakDays = 80;
         numOf_AuctionDays = 10;
@@ -135,7 +134,7 @@ contract TESTNewsCrowdsale {
             return;
         }
         
-        require(now > timeEndsDay[day]);
+        require(NowTime > timeEndsDay[day]);
         
         uint price        = amountSellPerDay / dailyTotals[day];
         uint userPersent  = price * userContribution[day][msg.sender];
@@ -256,7 +255,7 @@ contract TESTNewsCrowdsale {
     }
 
     function burnAllUnsoldTokens() public {
-        require(now > timeFinalizeAuction + 60 days);
+        require(NowTime > timeFinalizeAuction);
 
         uint contractBalance = IToken(token).balanceOf(this);
         IToken(token).burn(contractBalance);
