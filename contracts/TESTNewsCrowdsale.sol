@@ -6,7 +6,7 @@ import "./NewsToken.sol";
 contract IToken {
     function balanceOf(address who) public view returns (uint256);
     function transfer(address to, uint256 value) public returns (bool);
-    function burn(uint256 _value);
+    function burn(uint256 _value) public;
 }
 
 contract TESTNewsCrowdsale {
