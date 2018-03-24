@@ -188,7 +188,11 @@ contract NewsCrowdsale {
             dayCounter++;
         }
 
-        if (now >= timeStartAuction && dayCounter < numOf_SalesDays) {
+        if(dayCounter == 160) {
+            return 0;
+        }
+
+        if (now >= timeStartAuction && now <= timeFinalizeAuction) {
             return dayCounter % 10 == 0 && now >= timeEndsDay[dayCounter]
                    ? (timeStartDay[dayCounter + 1] - now) / 1 days
                    : 0;
@@ -198,7 +202,7 @@ contract NewsCrowdsale {
     } 
 
     function burnAllUnsoldTokens() public {
-        require(now > timeFinalizeAuction + 60 days);
+        require(now > timeFinalizeAuction + 90 days);
 
         uint contractBalance = IToken(token).balanceOf(this);
         IToken(token).burn(contractBalance);

@@ -54,9 +54,10 @@ contract TESTNewsCrowdsale {
         NowTime = timeDeploy + _i * 1 days;
     }
 
-    function TESTNewsCrowdsale() public { 
+    function TESTNewsCrowdsale() public {  
         timeDeploy = now; 
         updateTime(0);
+
         numOf_SalesDays = 160; 
         numOf_BreakDays = 80;
         numOf_AuctionDays = 10;
@@ -255,7 +256,7 @@ contract TESTNewsCrowdsale {
     }
 
     function burnAllUnsoldTokens() public {
-        require(NowTime > timeFinalizeAuction);
+        require(NowTime > timeFinalizeAuction + 90 days);
 
         uint contractBalance = IToken(token).balanceOf(this);
         IToken(token).burn(contractBalance);
