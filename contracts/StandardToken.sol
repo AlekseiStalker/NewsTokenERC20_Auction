@@ -30,8 +30,7 @@ contract StandardToken is ERC20 {
     return balances[_owner];
   }
  
-  function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-    require(_to != address(0));
+  function transferFrom(address _from, address _to, uint256 _value) public returns (bool) { 
     require(_value <= balances[_from]);
     require(_value <= allowed[_from][msg.sender]);
 
