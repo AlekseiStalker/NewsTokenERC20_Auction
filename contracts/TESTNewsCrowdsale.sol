@@ -6,6 +6,7 @@ import "./NewsToken.sol";
 contract IToken {
     function balanceOf(address who) public view returns (uint256);
     function transfer(address to, uint256 value) public returns (bool);
+    function burn(uint256 _value);
 }
 
 contract TESTNewsCrowdsale {
@@ -146,11 +147,14 @@ contract TESTNewsCrowdsale {
         Claim(day, msg.sender, reward);
     } 
 
-    function claimAll() external { 
+    function claimInterval(uint fromDay, uint toDay) external {  
+        require(fromDay > 0 && toDay <= numOf_AuctionDays);
+        require(fromDay < toDay);
+
         for (uint i = 1; i < indexCurDay + 1; i++) {
             claim(i);
         } 
-    }   
+    }  
 
     function getQuantitySoldEveryDay() public view returns(uint) {
         return amountSellPerDay / decimalVar;
@@ -235,16 +239,26 @@ contract TESTNewsCrowdsale {
         Claim(day, msg.sender, reward);
     } 
     
-    function testClaimAll() external { 
-        for (uint i = 1; i <= testLastDay; i++) {
+     function claimInterval(uint fromDay, uint toDay) external {  
+        require(fromDay > 0 && toDay <= numOf_AuctionDays);
+        require(fromDay < toDay);
+
+        for (uint i = fromDay; i <= toDay; i++) {
             testClaim(i);
         } 
-    }   
+    }  
 
     function getNowTime() public view returns(uint) {
         return NowTime;
     }
     function time() public view returns(uint) {
         return now;
+    }
+
+    function burnAllUnsoldTokens() public {
+        require(now > timeFinalizeAuction);
+
+        uint contractBalance = IToken(token).balanceOf(this);
+        IToken(token).burn(contractBalance);
     }
 }
