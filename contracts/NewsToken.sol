@@ -1,6 +1,7 @@
 pragma solidity ^0.4.18;
  
 import "./StandardToken.sol";
+import "./BurnableToken.sol";
 
 contract NewsToken is BurnableToken {
 
