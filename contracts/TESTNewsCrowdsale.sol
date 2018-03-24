@@ -205,12 +205,16 @@ contract TESTNewsCrowdsale {
             dayCounter++;
         }
 
-        if (NowTime >= timeStartAuction && dayCounter < numOf_SalesDays) {
+        if(dayCounter == 160) {
+            return 0;
+        }
+
+        if (now >= timeStartAuction && now <= timeFinalizeAuction) {
             return dayCounter % 10 == 0 && now >= timeEndsDay[dayCounter]
-                   ? (timeStartDay[dayCounter + 1] - NowTime) / 1 days
+                   ? (timeStartDay[dayCounter + 1] - now) / 1 days
                    : 0;
         } else {
-            return (timeStartAuction - NowTime) / 1 days;
+            return (timeStartAuction - now) / 1 days;
         }
     } 
     

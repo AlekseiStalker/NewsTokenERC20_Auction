@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.20;
  
 library SafeMath {
  
@@ -108,45 +108,24 @@ contract StandardToken is ERC20 {
   } 
 }
 
+contract BurnableToken is StandardToken {
 
-contract NewsToken is StandardToken {
-
-  string public constant name = "NewsToken";  
-  string public constant symbol = "NEWS"; 
-  uint8 public constant decimals = 12;  
-
-  uint256 public constant INITIAL_SUPPLY = 175000000 * (10 ** uint256(decimals));
-
-  address bountyWallet = 0x0; 
+  event Burn(address indexed burner, uint256 value);
  
-  function NewsToken(address saleAgent) public {
-    totalSupply_ = INITIAL_SUPPLY;
+  function burn(uint256 _value) public {
+    require(_value <= balances[msg.sender]); 
 
-    balances[bountyWallet] = 15000000 * (10 ** uint256(decimals));
-    Transfer(0x0, bountyWallet, 15000000 * (10 ** uint256(decimals)));
-    
-    balances[saleAgent] = INITIAL_SUPPLY - balances[bountyWallet];
-    Transfer(0x0, saleAgent, INITIAL_SUPPLY - balances[bountyWallet]); 
-  }  
-
-  function transferBountyTokens(address[] _recivers, uint[] _amountTokens) public returns(bool) {
-      require(bountyWallet == msg.sender);
-      require(_recivers.length == _amountTokens.length);
-      require(_recivers.length <= 40);
-        
-    for(uint i = 0; i < _recivers.length; i++) { 
-        balances[bountyWallet] = balances[bountyWallet].sub(_amountTokens[i]);
-        balances[_recivers[i]] = balances[_recivers[i]].add(_amountTokens[i]);
-
-        Transfer(bountyWallet, _recivers[i], _amountTokens[i]); 
-    }
+    address burner = msg.sender;
+    balances[burner] = balances[burner].sub(_value);
+    totalSupply_ = totalSupply_.sub(_value);
+    Burn(burner, _value);
   }
-} 
+}
 
-
- contract IToken {
+contract IToken {
     function balanceOf(address who) public view returns (uint256);
     function transfer(address to, uint256 value) public returns (bool);
+    function burn(uint256 _value) public;
 }
 
 contract NewsCrowdsale {
@@ -274,11 +253,14 @@ contract NewsCrowdsale {
         Claim(day, msg.sender, reward);
     } 
 
-    function claimAll() external { 
-        for (uint i = 1; i < indexCurDay + 1; i++) {
+    function claimInterval(uint fromDay, uint toDay) external {  
+        require(fromDay > 0 && toDay <= numOf_SalesDays);
+        require(fromDay < toDay);
+
+        for (uint i = fromDay; i <= toDay; i++) {
             claim(i);
         } 
-    }  
+    } 
 
     function getQuantitySoldEveryDay() public view returns(uint) {
         return amountSellPerDay / decimalVar;
@@ -326,7 +308,11 @@ contract NewsCrowdsale {
             dayCounter++;
         }
 
-        if (now >= timeStartAuction && dayCounter < numOf_SalesDays) {
+        if(dayCounter == 160) {
+            return 0;
+        }
+
+        if (now >= timeStartAuction && now <= timeFinalizeAuction) {
             return dayCounter % 10 == 0 && now >= timeEndsDay[dayCounter]
                    ? (timeStartDay[dayCounter + 1] - now) / 1 days
                    : 0;
@@ -334,4 +320,12 @@ contract NewsCrowdsale {
             return (timeStartAuction - now) / 1 days;
         }
     } 
+
+    function burnAllUnsoldTokens() public {
+        require(now > timeFinalizeAuction + 90 days);
+
+        uint contractBalance = IToken(token).balanceOf(this);
+        IToken(token).burn(contractBalance);
+    }
 }
+ 
