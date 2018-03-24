@@ -3,15 +3,88 @@ const CrowdsaleTest = artifacts.require("./TESTNewsCrowdsale.sol");
 
 contract ('Crowdsale_test', function(accounts) { 
     let token;
+    let decimals = 10**12;
     let crowdsaleTest; 
-
+    
     before(async function() {
         crowdsaleTest = await CrowdsaleTest.new(); 
-       
+        token = await NewsToken.new(crowdsaleTest.address); 
+
+        await crowdsaleTest.setTokenAddress(token.address);
         await crowdsaleTest.initStartAuctionDays();
         await crowdsaleTest.initEndsAuctionDays();
     });
 
+    describe('ClaimAll', function() {
+        it('inadequate interval (start > end)', async()=>{
+            await crowdsaleTest.updateTime(11);
+            try{
+                await crowdsaleTest.claimInterval(10,2);
+                console.log("Fail");
+            } catch(error) {
+                console.log(error.name + " " + error.message);
+            }
+        });
+
+        it('inadequate interval (start == 0)', async()=>{
+            await crowdsaleTest.updateTime(3);
+            try{
+                await crowdsaleTest.claimInterval(0,2);
+                console.log("Fail");
+            } catch(error) {
+                console.log(error.name + " " + error.message);
+            }
+        });
+
+        it('inadequate interval (start == end)', async()=>{
+            await crowdsaleTest.updateTime(11);
+            try{
+                await crowdsaleTest.claimInterval(10,10);
+                console.log("Fail");
+            } catch(error) {
+                console.log(error.name + " " + error.message);
+            }
+        });
+
+        it('inadequate interval (start < 0)', async()=>{
+            await crowdsaleTest.updateTime(3);
+            try{
+                await crowdsaleTest.claimInterval(-1,2);
+                console.log("Fail");
+            } catch(error) {
+                console.log(error.name + " " + error.message);
+            }
+        });
+
+        it('adequate interval (start == 1; end == 160)', async()=>{
+            await crowdsaleTest.updateTime(161);
+            await crowdsaleTest.claimInterval(1,160);
+            });
+
+        it('check output', async()=>{
+            let balance = await token.balanceOf(accounts[0]);
+            
+            assert.equal(balance, 0);
+
+            await crowdsaleTest.updateTime(80);
+            await crowdsaleTest.buy({from: accounts[0], value: 10000});
+
+            await crowdsaleTest.updateTime(85);
+            await crowdsaleTest.buy({from: accounts[0], value: 10000});
+
+            await crowdsaleTest.updateTime(445);
+            await crowdsaleTest.buy({from: accounts[0], value: 10000});
+            
+            await crowdsaleTest.updateTime(447);
+            await crowdsaleTest.claimInterval(1,46);
+
+            let Newbalance = await token.balanceOf(accounts[0]);
+            assert.equal(Newbalance, 3000000 * decimals);
+            
+        });
+
+    });
+    
     describe('Buy_time_test', function() { 
         
         it('Should throw error if try to buy on break', async() => {  

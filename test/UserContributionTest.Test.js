@@ -18,44 +18,44 @@ contract ('Crowdsale_test', function(accounts) {
 
     describe('UserContribution_test', function() {  
 
-        it ('Should give correctly amount of tokens to users (contribut value < 1 ether)', async() => { 
-            await crowdsaleTest.testSetUserContribut(1, {from: investor1, value: ether(0.005)});  
-            await crowdsaleTest.testSetUserContribut(1, {from: investor2, value: ether(0.01)});
+        // it ('Should give correctly amount of tokens to users (contribut value < 1 ether)', async() => { 
+        //     await crowdsaleTest.testSetUserContribut(1, {from: investor1, value: ether(0.005)});  
+        //     await crowdsaleTest.testSetUserContribut(1, {from: investor2, value: ether(0.01)});
  
-            await crowdsaleTest.testSetUserContribut(2, {from: investor1, value: ether(0.0007)});
-            await crowdsaleTest.testSetUserContribut(2, {from: investor2, value: ether(0.006)}); 
+        //     await crowdsaleTest.testSetUserContribut(2, {from: investor1, value: ether(0.0007)});
+        //     await crowdsaleTest.testSetUserContribut(2, {from: investor2, value: ether(0.006)}); 
              
-            await crowdsaleTest.testClaimAll({from: investor1});
-            await crowdsaleTest.testClaimAll({from: investor2});
+        //     await crowdsaleTest.testClaimAll({from: investor1});
+        //     await crowdsaleTest.testClaimAll({from: investor2});
 
-            let investor1Balance = await token.balanceOf(investor1);
-            let investor2Balance = await token.balanceOf(investor2);
+        //     let investor1Balance = await token.balanceOf(investor1);
+        //     let investor2Balance = await token.balanceOf(investor2);
 
-             assert.equal(437810945273631840, investor1Balance.toNumber());
-             assert.equal(1562189054726368158, investor2Balance.toNumber());
-        });
+        //      assert.equal(437810945273631840, investor1Balance.toNumber());
+        //      assert.equal(1562189054726368158, investor2Balance.toNumber());
+        // });
 
-        it ('Should give correctly amount of tokens to users (contribut value > 1 ether)', async() => { 
-            await crowdsaleTest.testSetUserContribut(1, {from: investor1, value: ether(3.5)});  
-            await crowdsaleTest.testSetUserContribut(1, {from: investor2, value: ether(0.038)});
+        // it ('Should give correctly amount of tokens to users (contribut value > 1 ether)', async() => { 
+        //     await crowdsaleTest.testSetUserContribut(1, {from: investor1, value: ether(3.5)});  
+        //     await crowdsaleTest.testSetUserContribut(1, {from: investor2, value: ether(0.038)});
  
-            await crowdsaleTest.testSetUserContribut(13, {from: investor1, value: ether(0.07)});
-            await crowdsaleTest.testSetUserContribut(13, {from: investor2, value: ether(0.5)}); 
-            await crowdsaleTest.testSetUserContribut(13, {from: investor2, value: ether(0.5)}); 
-            await crowdsaleTest.testSetUserContribut(13, {from: investor2, value: ether(0.02)}); 
+        //     await crowdsaleTest.testSetUserContribut(13, {from: investor1, value: ether(0.07)});
+        //     await crowdsaleTest.testSetUserContribut(13, {from: investor2, value: ether(0.5)}); 
+        //     await crowdsaleTest.testSetUserContribut(13, {from: investor2, value: ether(0.5)}); 
+        //     await crowdsaleTest.testSetUserContribut(13, {from: investor2, value: ether(0.02)}); 
              
-            await crowdsaleTest.testClaimAll({from: investor1});
-            await crowdsaleTest.testClaimAll({from: investor2});
+        //     await crowdsaleTest.testClaimAll({from: investor1});
+        //     await crowdsaleTest.testClaimAll({from: investor2});
              
-            await crowdsaleTest.testClaimAll({from: investor1});
-            await crowdsaleTest.testClaimAll({from: investor2});
+        //     await crowdsaleTest.testClaimAll({from: investor1});
+        //     await crowdsaleTest.testClaimAll({from: investor2});
 
-            let investor1Balance = await token.balanceOf(investor1);
-            let investor2Balance = await token.balanceOf(investor2);
+        //     let investor1Balance = await token.balanceOf(investor1);
+        //     let investor2Balance = await token.balanceOf(investor2);
 
-             assert.equal(1053479652112581098, investor1Balance.toNumber());
-             assert.equal(946520347887418900, investor2Balance.toNumber());
-        });
+        //      assert.equal(1053479652112581098, investor1Balance.toNumber());
+        //      assert.equal(946520347887418900, investor2Balance.toNumber());
+        // });
         
         it('Should throw error if try claim day that has not come', async ()=> {
             await crowdsaleTest.initStartAuctionDays();

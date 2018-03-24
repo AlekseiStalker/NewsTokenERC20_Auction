@@ -134,7 +134,7 @@ contract NewsCrowdsale {
     } 
 
     function claimInterval(uint fromDay, uint toDay) external {  
-        require(fromDay > 0 && toDay <= numOf_AuctionDays);
+        require(fromDay > 0 && toDay <= numOf_SalesDays);
         require(fromDay < toDay);
 
         for (uint i = fromDay; i <= toDay; i++) {
